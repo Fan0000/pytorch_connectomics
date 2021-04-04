@@ -81,6 +81,8 @@ def main():
     else:
         trainer.run_chunk(mode)
 
+
+
     print("Rank: {}. Device: {}. Process is finished!".format(
           args.local_rank, device))
 

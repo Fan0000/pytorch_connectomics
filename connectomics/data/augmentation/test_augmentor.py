@@ -82,13 +82,13 @@ class TestAugmentor(object):
 
         if self.num_aug == None:
             opts = itertools.product(
-                (False, ), (False, ), (False, ), (False, ))
+                (False,), (False,), (False,), (False,))
         elif self.num_aug == 4:
             opts = itertools.product(
-                (False, True), (False, True), (False, ), (False, ))
+                (False, True), (False, True), (False,), (False,))
         elif self.num_aug == 8:
             opts = itertools.product(
-                (False, True), (False, True), (False, ), (False, True))
+                (False, True), (False, True), (False,), (False, True))
         else:
             opts = itertools.product(
                 (False, True), (False, True), (False, True), (False, True))
@@ -124,7 +124,7 @@ class TestAugmentor(object):
             cc += 1
 
         if self.mode == 'mean':
-            out = out/cc
+            out = out / cc
 
         if (np.array(self.scale_factors) != 1).any():
             sf = [1.0, 1.0] + self.scale_factors
@@ -140,9 +140,9 @@ class TestAugmentor(object):
         cc = 0
 
         if self.num_aug == None:
-            opts = itertools.product((False, ), (False, ), (False, ))
+            opts = itertools.product((False,), (False,), (False,))
         elif self.num_aug == 4:
-            opts = itertools.product((False, True), (False, True), (False, ))
+            opts = itertools.product((False, True), (False, True), (False,))
         else:
             opts = itertools.product(
                 (False, True), (False, True), (False, True))
@@ -174,7 +174,7 @@ class TestAugmentor(object):
             cc += 1
 
         if self.mode == 'mean':
-            out = out/cc
+            out = out / cc
 
         if (np.array(self.scale_factors)[1:] != 1).any():
             sf = [1.0, 1.0] + self.scale_factors[1:]
@@ -207,21 +207,39 @@ class TestAugmentor(object):
     def update_name(self, name):
         r"""Update the name of the output file to indicate applied test-time augmentations.
         """
-        extension = "_"
         if self.num_aug is None:
             return name
-        elif self.num_aug == 4:
-            extension += "xy"
-        elif self.num_aug == 8:
-            extension += "txy"
-        elif self.num_aug == 16:
-            extension += "tzyx"
+
+        # TO-RM: re-construct for better looking
+        # elif self.num_aug == 4:
+        #     extension += "xy"
+        # elif self.num_aug == 8:
+        #     extension += "txy"
+        # elif self.num_aug == 16:
+        #     extension += "tzyx"
+
+        extension = {
+            4: "_xy",
+            8: "_txy",
+            16: "_tzyx"
+        }.get(self.num_aug, "")
+
+        # TO-RM: in case the name contains multiple/zero "." or
+        # name_list = name.split('.')
+        # new_filename = name_list[0] + extension + "." + name_list[1]
+        # return new_filename
 
         # Update the suffix of the output filename to indicate
         # the use of test-time data augmentation.
-        name_list = name.split('.')
-        new_filename = name_list[0] + extension + "." + name_list[1]
-        return new_filename
+        # For example:
+        # output.h5 --> output_xy.h5
+        # output --> output_tzyx
+        p = name.rfind(".")
+        # No "." in the name
+        if p == -1:
+            return name + extension
+
+        return name[:p] + extension + name[p:]
 
     @classmethod
     def build_from_cfg(cls, cfg, activation=True):

@@ -130,3 +130,10 @@ datasets/
 others/
 outputs/
 tmpwdir/
+.idea/inspectionProfiles/profiles_settings.xml
+*.iml
+.idea/inspectionProfiles/Project_Default.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/workspace.xml

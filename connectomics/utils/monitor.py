@@ -92,18 +92,23 @@ class Monitor(object):
         self.logger = Logger(log_path, log_opt[:3], log_opt[3])
         self.vis = Visualizer(cfg, vis_opt[0], vis_opt[1])
         self.log_iter, self.vis_iter = iter_num
-        self.do_vis = False if self.logger.log_tb is None else True
+        # TO-RM:
+        # #False if self.logger.log_tb is None else True
+        self.do_vis = self.logger.log_tb is not None
 
         self.reset()
 
     def update(self, iter_total, loss, losses_vis, lr=0.1):
         do_vis = False
         self.logger.update(loss, losses_vis)
+
         if (iter_total+1) % self.log_iter == 0:
             avg = self.logger.output(iter_total, lr)
             self.logger.reset()
+
             if (iter_total+1) % self.vis_iter == 0:
                 do_vis = self.do_vis
+
         return do_vis
 
     def visualize(self, volume, label, output, weight, iter_total,

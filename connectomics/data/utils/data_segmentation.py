@@ -1,3 +1,7 @@
+from __future__ import print_function, division
+from sys import version
+from typing import Optional, Union, List
+
 import numpy as np
 from scipy.sparse import coo_matrix
 from scipy.ndimage.morphology import binary_erosion, binary_dilation
@@ -6,13 +10,12 @@ from skimage.measure import label as label_cc  # avoid namespace conflict
 from skimage.segmentation import find_boundaries
 from scipy.signal import convolve2d
 
-from .data_affinity import mknhood2d, seg_to_aff
+from .data_affinity import *
 from .data_transform import *
-
-# reduce the labeling
 
 
 def getSegType(mid):
+    # reduce the label dtype
     m_type = np.uint64
     if mid < 2**8:
         m_type = np.uint8
@@ -205,10 +208,48 @@ def seg2binary(label, topt):
     return fg_mask
 
 
-def seg_to_targets(label, topts):
+def seg2affinity(label, topt):
+    assert label.ndim in [2, 3], \
+        'Undefined affinity for ndim=' + str(label.ndim)
+    if len(topt) == 1:
+        return seg2aff_v0(label)
+
+    aff_func_dict = {
+        'v1': seg2aff_v1,
+        'v2': seg2aff_v2,
+    }
+
+    # valid format: 2-z-y-x-version
+    options = topt.split('-')
+    assert len(options) == 5
+    _, z, y, x, version = options
+    return aff_func_dict[version](
+        label, int(z), int(y), int(x))
+
+
+def erode_label(label: np.ndarray,
+                index: int,
+                erosion_rates: Optional[Union[List[int], int]] = None):
+    if erosion_rates is None:
+        return label
+
+    if isinstance(erosion_rates, list):
+        label_erosion = erosion_rates[index]
+    else:
+        label_erosion = erosion_rates
+    return seg_widen_border(label, label_erosion)
+
+
+def seg_to_targets(label_orig: np.ndarray,
+                   topts: List[str],
+                   erosion_rates: Optional[Union[List[int], int]] = None):
     # input: (D, H, W), output: (C, D, H, W)
     out = [None]*len(topts)
+
     for tid, topt in enumerate(topts):
+        label = label_orig.copy()
+        label = erode_label(label, tid, erosion_rates)
+
         if topt[0] == '0':  # binary mask
             fg_mask = seg2binary(label, topt)
             out[tid] = fg_mask[np.newaxis, :].astype(np.float32)
@@ -219,13 +260,7 @@ def seg_to_targets(label, topts):
             tmp[2] = (label > 0)
             out[tid] = np.stack(tmp, 0).astype(np.float32)
         elif topt[0] == '2':  # affinity
-            if label.ndim == 3:  # 3d aff
-                out[tid] = seg_to_aff(label)
-            elif label.ndim == 2:  # 2d aff
-                out[tid] = seg_to_aff(label, nhood=mknhood2d(1))
-            else:
-                raise ValueError(
-                    'Undefined affinity computation for ndim = ' + str(label.ndim))
+            out[tid] = seg2affinity(label, topt)
         elif topt[0] == '3':  # small object mask
             # size_thres: 2d threshold for small size
             # zratio: resolution ration between z and x/y

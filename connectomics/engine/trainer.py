@@ -152,7 +152,7 @@ class Trainer(object):
 
         # Release some GPU memory and ensure same GPU usage in the consecutive iterations according to
         # https://discuss.pytorch.org/t/gpu-memory-consumption-increases-while-training/2770
-        del pred, loss, losses_vis
+        del volume, target, pred, weight, loss, losses_vis
 
     def validate(self, iter_total):
         r"""Validation function of the trainer class.
@@ -249,10 +249,12 @@ class Trainer(object):
             result[vol_id] /= weight[vol_id]  # in-place to save memory
             result[vol_id] *= 255
             result[vol_id] = result[vol_id].astype(np.uint8)
-            pad_size = (np.array(self.cfg.DATASET.PAD_SIZE) *
-                        np.array(output_scale)).astype(int).tolist()
-            pad_size = get_padsize(pad_size)
-            result[vol_id] = array_unpad(result[vol_id], pad_size)
+
+            if self.cfg.INFERENCE.UNPAD:
+                pad_size = (np.array(self.cfg.DATASET.PAD_SIZE) *
+                            np.array(output_scale)).astype(int).tolist()
+                pad_size = get_padsize(pad_size)
+                result[vol_id] = array_unpad(result[vol_id], pad_size)
 
         if self.output_dir is None:
             return result
@@ -270,7 +272,8 @@ class Trainer(object):
         assert len(dir_name) == 1
 
         num_file = len(img_name)
-        for i in range(num_file):
+        start_idx = self.cfg.INFERENCE.DO_SINGLY_START_INDEX
+        for i in range(start_idx, num_file):
             dataset = get_dataset(
                 self.cfg, self.augmentor, self.mode, self.rank,
                 dir_name_init=dir_name, img_name_init=[img_name[i]])
@@ -426,7 +429,8 @@ class Trainer(object):
             return
 
         # inference mode
-        num_chunk = len(self.dataset.chunk_num_ind)
+        num_chunk = len(self.dataset.chunk_ind)
+        print("Total number of chunks: ", num_chunk)
         for chunk in range(num_chunk):
             self.dataset.updatechunk(do_load=False)
             self.test_filename = self.cfg.INFERENCE.OUTPUT_NAME + \

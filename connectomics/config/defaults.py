@@ -33,6 +33,7 @@ _C.MODEL.FILTERS = [28, 36, 48, 64, 80]
 _C.MODEL.ISOTROPY = [False, False, False, True, True]
 
 _C.MODEL.TARGET_OPT = ['0']
+_C.MODEL.LABEL_EROSION = None
 
 _C.MODEL.WEIGHT_OPT = [['1']]
 
@@ -135,12 +136,12 @@ _C.DATASET.LOAD_2D = False
 
 # Padding size for the input volumes
 _C.DATASET.PAD_SIZE = [2, 64, 64]
+_C.DATASET.PAD_MODE = 'reflect'  # reflect, constant, symmetric
 
 # Normalize the image and cast to uint8 format
 _C.DATASET.NORMALIZE_RANGE = True
 
-# Half Patch size for 2D label erosion
-_C.DATASET.LABEL_EROSION = 0
+_C.DATASET.LABEL_EROSION = None
 
 # If it's a binary label
 _C.DATASET.LABEL_BINARY = False
@@ -154,7 +155,8 @@ _C.DATASET.DO_CHUNK_TITLE = 0
 _C.DATASET.DATA_CHUNK_NUM = [1, 1, 1]
 
 # Predefined data chunk to iterate through
-_C.DATASET.DATA_CHUNK_NUM_IND = None
+_C.DATASET.DATA_CHUNK_IND = None
+_C.DATASET.CHUNK_IND_SPLIT = None
 
 # Boolean variable, euqal to 'int(args.data_chunk_num[-1:])==1'
 _C.DATASET.DATA_CHUNK_STRIDE = True
@@ -345,10 +347,14 @@ _C.INFERENCE.IMAGE_NAME = None
 _C.INFERENCE.OUTPUT_PATH = ""
 _C.INFERENCE.OUTPUT_NAME = 'result.h5'
 _C.INFERENCE.IS_ABSOLUTE_PATH = None
-# Load a volume at test time when needed.
+_C.INFERENCE.DO_CHUNK_TITLE = None
+
+# Do inference one-by-on (load a volume when needed).
 _C.INFERENCE.DO_SINGLY = False
+_C.INFERENCE.DO_SINGLY_START_INDEX = 0
 
 _C.INFERENCE.PAD_SIZE = None
+_C.INFERENCE.UNPAD = True
 # activation for the output for inference and visualization
 _C.INFERENCE.OUTPUT_ACT = ['sigmoid']
 

@@ -114,6 +114,7 @@ def _get_input(cfg,
         assert len(valid_mask_name) == len(img_name)
         valid_mask = [None]*len(valid_mask_name)
 
+    pad_mode = cfg.DATASET.PAD_MODE
     volume = [None] * len(img_name)
     read_fn = readvol if not cfg.DATASET.LOAD_2D else readimg_as_vol
     for i in range(len(img_name)):
@@ -123,7 +124,7 @@ def _get_input(cfg,
             volume[i] = normalize_range(volume[i])
         if (np.array(cfg.DATASET.DATA_SCALE) != 1).any():
             volume[i] = zoom(volume[i], cfg.DATASET.DATA_SCALE, order=1)
-        volume[i] = np.pad(volume[i], get_padsize(pad_size), 'reflect')
+        volume[i] = np.pad(volume[i], get_padsize(pad_size), pad_mode)
         print(f"volume shape (after scaling and padding): {volume[i].shape}")
 
         if mode in ['val', 'train'] and label is not None:
@@ -134,15 +135,12 @@ def _get_input(cfg,
                 label[i] = label[i][None, :]
             if (np.array(cfg.DATASET.DATA_SCALE) != 1).any():
                 label[i] = zoom(label[i], cfg.DATASET.DATA_SCALE, order=0)
-            if cfg.DATASET.LABEL_EROSION != 0:
-                label[i] = seg_widen_border(
-                    label[i], cfg.DATASET.LABEL_EROSION)
             if cfg.DATASET.LABEL_BINARY and label[i].max() > 1:
                 label[i] = label[i] // 255
             if cfg.DATASET.LABEL_MAG != 0:
                 label[i] = (label[i]/cfg.DATASET.LABEL_MAG).astype(np.float32)
 
-            label[i] = np.pad(label[i], get_padsize(pad_size), 'reflect')
+            label[i] = np.pad(label[i], get_padsize(pad_size), pad_mode)
             print(f"label shape: {label[i].shape}")
 
         if mode in ['val', 'train'] and valid_mask is not None:
@@ -152,7 +150,7 @@ def _get_input(cfg,
                     valid_mask[i], cfg.DATASET.DATA_SCALE, order=0)
 
             valid_mask[i] = np.pad(
-                valid_mask[i], get_padsize(pad_size), 'reflect')
+                valid_mask[i], get_padsize(pad_size), pad_mode)
             print(f"valid_mask shape: {label[i].shape}")
 
     return volume, label, valid_mask
@@ -168,13 +166,11 @@ def get_dataset(cfg,
     """
     assert mode in ['train', 'val', 'test']
 
-    label_erosion = 0
     sample_label_size = cfg.MODEL.OUTPUT_SIZE
     topt, wopt = ['0'], [['0']]
     if mode == 'train':
         sample_volume_size = augmentor.sample_size if augmentor is not None else cfg.MODEL.INPUT_SIZE
         sample_label_size = sample_volume_size
-        label_erosion = cfg.DATASET.LABEL_EROSION
         sample_stride = (1, 1, 1)
         topt, wopt = cfg.MODEL.TARGET_OPT, cfg.MODEL.WEIGHT_OPT
         iter_num = cfg.SOLVER.ITERATION_TOTAL * cfg.SOLVER.SAMPLES_PER_BATCH
@@ -184,7 +180,6 @@ def get_dataset(cfg,
     elif mode == 'val':
         sample_volume_size = cfg.MODEL.INPUT_SIZE
         sample_label_size = sample_volume_size
-        label_erosion = cfg.DATASET.LABEL_EROSION
         sample_stride = [x//2 for x in sample_volume_size]
         topt, wopt = cfg.MODEL.TARGET_OPT, cfg.MODEL.WEIGHT_OPT
         iter_num = -1
@@ -208,6 +203,7 @@ def get_dataset(cfg,
         "reject_p": cfg.DATASET.REJECT_SAMPLING.P,
         "data_mean": cfg.DATASET.MEAN,
         "data_std": cfg.DATASET.STD,
+        "erosion_rates": cfg.MODEL.LABEL_EROSION,
     }
 
     if cfg.DATASET.DO_CHUNK_TITLE == 1:  # build TileDataset
@@ -219,13 +215,13 @@ def get_dataset(cfg,
                 valid_mask_json = cfg.DATASET.INPUT_PATH + cfg.DATASET.VALID_MASK_NAME
 
         dataset = TileDataset(chunk_num=cfg.DATASET.DATA_CHUNK_NUM,
-                              chunk_num_ind=cfg.DATASET.DATA_CHUNK_NUM_IND,
+                              chunk_ind=cfg.DATASET.DATA_CHUNK_IND,
+                              chunk_ind_split=cfg.DATASET.CHUNK_IND_SPLIT,
                               chunk_iter=cfg.DATASET.DATA_CHUNK_ITER,
                               chunk_stride=cfg.DATASET.DATA_CHUNK_STRIDE,
                               volume_json=cfg.DATASET.INPUT_PATH+cfg.DATASET.IMAGE_NAME,
                               label_json=label_json,
                               valid_mask_json=valid_mask_json,
-                              label_erosion=label_erosion,
                               pad_size=cfg.DATASET.PAD_SIZE,
                               **shared_kwargs)
 

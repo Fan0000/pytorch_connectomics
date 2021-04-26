@@ -24,7 +24,7 @@ div.container a.header-logo {
 }
 
 .rst-versions.rst-badge {
-     bottom: 0; !important;
+     bottom: 0 !important;
 }
 
 .rst-versions.shift-up {

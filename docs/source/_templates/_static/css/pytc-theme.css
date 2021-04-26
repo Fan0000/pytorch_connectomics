@@ -304,7 +304,7 @@ footer table {
 
 /* remove gray footer */
 .pytorch-body .docs-tutorials-resources {
-  padding: 2cm !important;
+  padding: 0cm !important;
 }
 
 /* dim out pytorch header

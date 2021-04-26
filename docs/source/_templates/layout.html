@@ -175,6 +175,38 @@
     </div>
 
     {% include "versions.html" %}
+    {% if not READTHEDOCS %}
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      v: latest
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      <dl>
+        <dt>{{ _('Versions') }}</dt>
+        {% if test_versions %}
+        {% for version in test_versions %}
+        <dd><a href="#">{{ version }}</a></dd>
+        {% endfor %}
+        {% else %}
+        <dd><a href="#">latest</a></dd>
+        {% endif %}
+      </dl>
+      <dl>
+        <dt>{{ _('Downloads') }}</dt>
+        <dd><a href="https://github.com/zudi-lin/pytorch_connectomics/">PDF</a>
+        </dd>
+        <dd><a href="https://github.com/zudi-lin/pytorch_connectomics/">HTML</a></dd>
+      </dl>
+      <dl>
+        <dt>{{ _('On Github') }}</dt>
+        <dd><a href="https://github.com/zudi-lin/pytorch_connectomics">Home</a></dd>
+        <dd><a href="https://github.com/zudi-lin/pytorch_connectomics/">Docs</a></dd>
+      </dl>
+    </div>
+  </div>
+  {% endif %}
 
   </nav>
 
@@ -294,64 +326,29 @@
 
   #}
 
-  {% block footer %}
-  {% if not READTHEDOCS %}
-  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
-    <span class="rst-current-version" data-toggle="rst-current-version">
-      <span class="fa fa-book"> Read the Docs</span>
-      v: latest
-      <span class="fa fa-caret-down"></span>
-    </span>
-    <div class="rst-other-versions">
-      <dl>
-        <dt>{{ _('Versions') }}</dt>
-        {% if test_versions %}
-        {% for version in test_versions %}
-        <dd><a href="#">{{ version }}</a></dd>
-        {% endfor %}
-        {% else %}
-        <dd><a href="#">latest</a></dd>
-        {% endif %}
-      </dl>
-      <dl>
-        <dt>{{ _('Downloads') }}</dt>
-        <dd><a href="https://github.com/zudi-lin/pytorch_connectomics/">PDF</a>
-        </dd>
-        <dd><a href="https://github.com/zudi-lin/pytorch_connectomics/">HTML</a></dd>
-      </dl>
-      <dl>
-        <dt>{{ _('On Github') }}</dt>
-        <dd><a href="https://github.com/zudi-lin/pytorch_connectomics">Home</a></dd>
-        <dd><a href="https://github.com/zudi-lin/pytorch_connectomics/">Docs</a></dd>
-      </dl>
-    </div>
-  </div>
-  {% endif %}
-  {% endblock %}
-
   <!-- Begin Footer -->
 
-  <div class="container-fluid docs-tutorials-resources" id="docs-tutorials-resources">
-    <div class="container">
-      <div class="row">
-        <div class="col-md-4 text-center">
-          <h2>Visual Computing Group</h2>
-          <p>Visual computing group (VCG) led by Prof. Hanspeter Pfister at Harvard University</p>
-          <a class="with-right-arrow" href="{{ theme_variables.external_urls['vcg'] }}">View VCG</a>
-        </div>
-        <div class="col-md-4 text-center">
-          <h2>Lichtman Lab</h2>
-          <p>Neuroscience research lab led by Prof. Jeff Lichtman at Harvard University</p>
-          <a class="with-right-arrow" href="{{ theme_variables.external_urls['lichtman'] }}">View Lichtman Lab</a>
-        </div>
-        <div class="col-md-4 text-center">
-          <h2>PyTorch</h2>
-          <p>An open source machine learning framework</p>
-          <a class="with-right-arrow" href="{{ theme_variables.external_urls['pytorch'] }}">View PyTorch</a>
-        </div>
-      </div>
-    </div>
-  </div>
+{#  <div class="container-fluid docs-tutorials-resources" id="docs-tutorials-resources">#}
+{#    <div class="container">#}
+{#      <div class="row">#}
+{#        <div class="col-md-4 text-center">#}
+{#          <h2>Visual Computing Group</h2>#}
+{#          <p>Visual computing group (VCG) led by Prof. Hanspeter Pfister at Harvard University</p>#}
+{#          <a class="with-right-arrow" href="{{ theme_variables.external_urls['vcg'] }}">View VCG</a>#}
+{#        </div>#}
+{#        <div class="col-md-4 text-center">#}
+{#          <h2>Lichtman Lab</h2>#}
+{#          <p>Neuroscience research lab led by Prof. Jeff Lichtman at Harvard University</p>#}
+{#          <a class="with-right-arrow" href="{{ theme_variables.external_urls['lichtman'] }}">View Lichtman Lab</a>#}
+{#        </div>#}
+{#        <div class="col-md-4 text-center">#}
+{#          <h2>PyTorch</h2>#}
+{#          <p>An open source machine learning framework</p>#}
+{#          <a class="with-right-arrow" href="{{ theme_variables.external_urls['pytorch'] }}">View PyTorch</a>#}
+{#        </div>#}
+{#      </div>#}
+{#    </div>#}
+{#  </div>#}
 
 
   {% include "cookie_banner.html" %}

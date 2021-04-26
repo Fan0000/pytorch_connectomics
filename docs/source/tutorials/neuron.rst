@@ -18,7 +18,7 @@ and `Variation of Information <https://en.wikipedia.org/wiki/Variation_of_inform
 The main script to run the training and inference is ``pytorch_connectomics/scripts/main.py``. 
 The pytorch target affinity generation is :class:`connectomics.data.dataset.VolumeDataset`.
 
-Neuighboring affinity learning
+Neighboring affinity learning
 -------------------------------
 
 The affinity value between two neighboring pixels (voxels) is 1 if they belong to the same instance and 0 if 
@@ -46,7 +46,7 @@ For description of the SNEMI dataset please check `this page <https://vcg.github
 
     Since for a region with dense masks, most affinity values are 1, in practice, we usually widen the instance border (erode the instance mask) 
     to deal with the class imbalance problem and let the model make more conservative predictions to prevent merge error. This is done by 
-    setting ``DATASET.LABEL_EROSION = 1``.
+    setting ``MODEL.LABEL_EROSION = 1``.
 
 2 - Run training 
 ^^^^^^^^^^^^^^^^^^

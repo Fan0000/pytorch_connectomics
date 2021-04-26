@@ -44,9 +44,10 @@ div.container a.header-logo {
   color: #6c6c6d;
   background: #f2f3f7;
   display: none;
+  width: inherit;
 }
 
-.rst-versions .rst-other-versions .injected{
+.injected {
   display: block;
   width: inherit;
 }

@@ -46,6 +46,11 @@ div.container a.header-logo {
   display: none;
 }
 
+.rst-versions .rst-other-versions .injected{
+  display: block;
+  width: inherit;
+}
+
 .rst-versions .rst-current-version {
   padding: 12px;
   background-color: #e2e3e6;

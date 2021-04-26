@@ -35,7 +35,8 @@ div.container a.header-logo {
 }
 
 .rst-versions.shift-up .rst-other-versions {
-  display: block;
+  /*display: block;*/
+  display: contents;
   width: inherit;
 }
 
@@ -60,6 +61,10 @@ div.container a.header-logo {
   font-size: 90%;
   cursor: pointer;
   color: #ee4c2c;
+}
+
+.rst-other-versions dl {
+    margin: 5%;
 }
 
 .rst-versions .rst-other-versions dd {

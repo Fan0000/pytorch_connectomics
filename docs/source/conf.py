@@ -74,7 +74,7 @@ master_doc = 'index'
 # General information about the project.
 author = 'Zudi Lin and Donglai Wei'
 project = u'connectomics'
-copyright = u'2021-{}, {}'.format(datetime.datetime.now().year, author)
+copyright = u'2019-{}, {}'.format(datetime.datetime.now().year, author)
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

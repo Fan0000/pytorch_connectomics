@@ -36,6 +36,7 @@ div.container a.header-logo {
 
 .rst-versions.shift-up .rst-other-versions {
   display: block;
+  width: inherit;
 }
 
 .rst-versions .rst-other-versions {
@@ -44,7 +45,6 @@ div.container a.header-logo {
   color: #6c6c6d;
   background: #f2f3f7;
   display: none;
-  width: inherit;
 }
 
 .injected {

@@ -64,7 +64,11 @@ div.container a.header-logo {
 }
 
 .rst-other-versions dl {
-    margin: 5%;
+    margin: 5% !important;
+}
+
+.rst-other-versions small {
+    margin: 5% !important;
 }
 
 .rst-versions .rst-other-versions dd {
